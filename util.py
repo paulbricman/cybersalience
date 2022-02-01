@@ -38,15 +38,20 @@ def attend(corpus, query, model, tokenizer, blacklist=False):
 
 
 def plot_attention(attention, corpus_tokens):
-    plt.matshow([attention])
+    plt.matshow(attention)
 
     x_pos = np.arange(len(corpus_tokens))
     plt.xticks(x_pos, corpus_tokens)
 
-    y_pos = np.arange(1)
-    plt.yticks(y_pos, ['query'])
+    y_pos = np.arange(len(attention))
+    plt.yticks(y_pos, ['query'] * len(attention))
 
     plt.show()
+
+
+def softmax(x, temperature):
+    e_x = np.exp(x / temperature)
+    return e_x / e_x.sum()
 
 
 attend('Anna lived in Constantinople. Omeir lived close to it.',
