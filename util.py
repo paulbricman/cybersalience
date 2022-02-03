@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 from transformers import AutoTokenizer, AutoModel
 import streamlit as st
 import re
+import plotly.express as px
+import pandas as pd
 
 
 def attend(corpus, query, model, tokenizer, blacklist=False):
@@ -16,7 +18,9 @@ def attend(corpus, query, model, tokenizer, blacklist=False):
     corpus_ids = tokenizer(corpus + '\n\n',
                            return_tensors='pt')['input_ids']
 
-    attention = [e.detach().numpy() for e in model(full_ids)[-1]][-1]
+    attention = [[e.detach().numpy()[0]]
+                 for e in model(full_ids)[-1]][-2]
+    print(np.array(attention).shape)
     attention = np.array([e[1:-1]
                          for e in np.mean(attention, axis=(0, 1))[1:-1]])
 
@@ -55,27 +59,25 @@ def softmax(x, temperature):
 
 
 def render_html(corpus_tokens, attention, focus=0.99):
-    # focus = focus * 0.5 + 0.5
-    mu = np.median(attention)
-    sigma = np.std(attention)
-
     raw = ''
 
     distribution = [0, 0, 0]
     for e_idx, e in enumerate(corpus_tokens):
-        if attention[e_idx] > mu + focus * sigma * 8:
-            distribution[2] += 1
-            raw += ' <span class="glow-large">' + e + '</span>'
-        elif attention[e_idx] > mu + focus * sigma * 2:
-            distribution[1] += 1
-            raw += ' <span class="glow-medium">' + e + '</span>'
-        elif attention[e_idx] > mu + focus * sigma * 1:
-            distribution[0] += 1
-            raw += ' <span class="glow-small">' + e + '</span>'
+        if e not in '.!?':
+            if attention[e_idx] > 0.015 * focus:
+                distribution[2] += 1
+                raw += ' <span class="glow-large">' + e + '</span>'
+            elif attention[e_idx] > 0.01 * focus:
+                distribution[1] += 1
+                raw += ' <span class="glow-medium">' + e + '</span>'
+            elif attention[e_idx] > 0.005 * focus:
+                distribution[0] += 1
+                raw += ' <span class="glow-small">' + e + '</span>'
+            else:
+                raw += ' ' + e
         else:
             raw += ' ' + e
 
-    print(distribution)
     raw = re.sub(r'\s##', '', raw)
     raw = re.sub(r'\s(\.|,|!|\?|;|\))', r'\1', raw)
     raw = re.sub(r'\(\s', r'(', raw)
@@ -83,6 +85,7 @@ def render_html(corpus_tokens, attention, focus=0.99):
     raw = re.sub(r'\s<span class="glow-(small|medium|large)">##',
                  r'<span class="glow-\1">', raw)
     raw = raw.strip()
+    raw = '<p>' + raw + '</p>'
     return raw
 
 

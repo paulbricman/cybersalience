@@ -3,8 +3,7 @@ from util import attend, render_html, load
 
 
 st.set_page_config(
-    page_title='👁️ semantic salience',
-    layout='wide')
+    page_title='👁️ semantic salience')
 
 tokenizer, model = load('bert-base-cased')
 
@@ -20,23 +19,23 @@ hide_streamlit_style = '''
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
 st.title('👁️ semantic salience')
-st.markdown('A fusion of artificial and organic attention.')
+st.markdown('An integration of artificial and organic attention.')
 st.markdown('---')
 
-cols = st.columns([1, 2.5])
-query = cols[0].text_input(
+cols = st.columns([1, 1])
+query = st.sidebar.text_input(
     'driving query', help='Specify the overarching query which will drive the salience map.')
-duration = cols[0].slider('pulse duration (seconds)', 0., 5., step=0.1, value=1.,
-                          help='Specify how long the pulse should take')
-focus = cols[0].slider('focus strength', 0., 1., step=0.01, value=0.95,
-                       help='Specify how sharp the focus of the salience map should be. Low focus means the salience is distributed more broadly across tokens. High focus means only a handful of tokens will be attended to. `softmax_temperature = 1 - focus`')
-color = cols[0].color_picker(
-    'halo color', help='Specify the color of the halo around tokens being attended to.', value='#EA2121')
+duration = st.sidebar.slider('pulse duration (seconds)', 0., 5., step=0.1, value=1.,
+                             help='Specify how long the pulse should take')
+focus = st.sidebar.slider('focus strength', 0., 1., step=0.01, value=0.8,
+                          help='Specify how sharp the focus of the salience map should be. Low focus means the salience is distributed more broadly across tokens. High focus means only a handful of tokens will be attended to. `softmax_temperature = 1 - focus`')
+color = st.sidebar.color_picker(
+    'halo color', help='Specify the color of the halo around tokens being attended to.', value='#2160EA')
 
-font_family = cols[0].selectbox(
+font_family = st.sidebar.selectbox(
     'font family', sorted(['Monospace', 'Times New Roman', 'Arial', 'Helvetica', 'Courier', 'Calibri', 'Georgia', 'Space Grotesk']))
-font_size = cols[0].slider('font size', 10, 20, step=1, value=14,
-                           help='Specify how big the text should be.')
+font_size = st.sidebar.slider('font size', 10, 20, step=1, value=14,
+                              help='Specify how big the text should be.')
 
 style = f'''
 <style>
@@ -89,21 +88,25 @@ container {{
 </style>'''
 
 if 'content' not in st.session_state.keys() or st.session_state['content'] == None:
-    content = cols[1].text_area('content', height=300)
-    if cols[1].button('save'):
+    content = st.text_area('content', height=300)
+    if st.button('save'):
         st.session_state['content'] = content
         st.experimental_rerun()
 else:
     if ('query' not in st.session_state.keys() or query != st.session_state['query']) or \
             ('focus' not in st.session_state.keys() or focus != st.session_state['focus']):
-        corpus_tokens, attention = attend(
-            st.session_state['content'], query, model, tokenizer)
-        content = render_html(corpus_tokens, attention, focus)
+        raw_pars = st.session_state['content'].split('\n')
+        pars = []
 
-    if cols[0].button('reset content'):
+        for raw_par in raw_pars:
+            if raw_par.strip() != '':
+                corpus_tokens, attention = attend(
+                    raw_par, query, model, tokenizer)
+                pars += [render_html(corpus_tokens, attention, focus)]
+
+    if st.sidebar.button('reset content'):
         st.session_state['content'] = None
         st.experimental_rerun()
 
-    content = style + '<container><p>' + content + '</p></container>'
-    with cols[1]:
-        st.components.v1.html(content, scrolling=True, height=5000)
+    content = style + '<container>' + ''.join(pars) + '</container>'
+    st.components.v1.html(content, scrolling=True, height=5000)
