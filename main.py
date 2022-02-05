@@ -24,20 +24,23 @@ st.markdown('---')
 
 cols = st.columns([1, 1])
 query = st.sidebar.text_input(
-    'driving query', help='Specify the overarching query which will drive the salience map.')
-duration = st.sidebar.slider('pulse duration (seconds)', 0., 5., step=0.1, value=1.,
+    'driving query', help='Specify the overarching query which will drive the salience map.', value='What are perceptual engines?')
+duration = st.sidebar.slider('pulse duration (seconds)', 0., 5., step=0.1, value=2.,
                              help='Specify how long the pulse should take')
-focus = st.sidebar.slider('focus strength', 0., 1., step=0.01, value=0.8,
+focus = st.sidebar.slider('focus strength', 0., 1., step=0.01, value=1.,
                           help='Specify how sharp the focus of the salience map should be. Low focus means the salience is distributed more broadly across tokens. High focus means only a handful of tokens will be attended to. `softmax_temperature = 1 - focus`')
 color = st.sidebar.color_picker(
     'halo color', help='Specify the color of the halo around tokens being attended to.', value='#2160EA')
 
 font_family = st.sidebar.selectbox(
-    'font family', sorted(['Monospace', 'Times New Roman', 'Arial', 'Helvetica', 'Courier', 'Calibri', 'Georgia', 'Space Grotesk']))
+    'font family', ['Space Grotesk', 'Monospace', 'Times New Roman', 'Arial', 'Helvetica', 'Courier', 'Calibri', 'Georgia'])
 font_size = st.sidebar.slider('font size', 10, 20, step=1, value=14,
                               help='Specify how big the text should be.')
 
 style = f'''
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400&display=swap" rel="stylesheet"> 
 <style>
 container {{ 
     font-size: {font_size}pt;
@@ -87,7 +90,10 @@ container {{
 }}
 </style>'''
 
-if 'content' not in st.session_state.keys() or st.session_state['content'] == None:
+if 'content' not in st.session_state.keys():
+    st.session_state['content'] = open('write-up.txt').read()
+
+if st.session_state['content'] == None:
     content = st.text_area('content', height=300)
     if st.button('save'):
         st.session_state['content'] = content

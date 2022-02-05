@@ -10,7 +10,7 @@ import pandas as pd
 
 def attend(corpus, query, model, tokenizer, blacklist=False):
     token_blacklist = [119, 136, 106]
-    query = '\n\n---\n\n' + query
+    query = query
     full_ids = tokenizer(corpus + '\n\n' + query,
                          return_tensors='pt')['input_ids']
     query_ids = tokenizer(query,
@@ -20,7 +20,6 @@ def attend(corpus, query, model, tokenizer, blacklist=False):
 
     attention = [[e.detach().numpy()[0]]
                  for e in model(full_ids)[-1]][-2]
-    print(np.array(attention).shape)
     attention = np.array([e[1:-1]
                          for e in np.mean(attention, axis=(0, 1))[1:-1]])
 
