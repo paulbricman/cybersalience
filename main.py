@@ -3,7 +3,7 @@ from util import attend, render_html, load
 
 
 st.set_page_config(
-    page_title='👁️ semantic salience')
+    page_title='👁️ cybersalience')
 
 tokenizer, model = load('bert-base-cased')
 
@@ -18,13 +18,13 @@ hide_streamlit_style = '''
             '''
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
-st.title('👁️ semantic salience')
-st.markdown('An integration of artificial and organic attention.')
+st.title('👁️ cybersalience')
+st.markdown('A synergy of artificial and organic attention.')
 st.markdown('---')
 
 cols = st.columns([1, 1])
 query = st.sidebar.text_input(
-    'driving query', help='Specify the overarching query which will drive the salience map.', value='What are perceptual engines?')
+    'driving query', help='Specify the overarching query which will drive the salience map.', value='cybersalience')
 duration = st.sidebar.slider('pulse duration (seconds)', 0., 5., step=0.1, value=2.,
                              help='Specify how long the pulse should take')
 focus = st.sidebar.slider('focus strength', 0., 1., step=0.01, value=1.,
