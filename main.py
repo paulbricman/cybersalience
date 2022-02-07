@@ -116,3 +116,17 @@ else:
 
     content = style + '<container>' + ''.join(pars) + '</container>'
     st.components.v1.html(content, scrolling=True, height=5000)
+
+st.sidebar.markdown('''---
+#### resources
+- [lexiscore](https://paulbricman.com/thoughtware/lexiscore) and [decontextualizer](https://paulbricman.com/thoughtware/decontextualizer)
+- [humane representation of thought](https://vimeo.com/115154289)
+- NLP models [attending to, and forming memories of text](https://distill.pub/2016/augmented-rnns/)
+- [representational resources](https://paulbricman.com/reflections/representational-resources)
+- [attention in machine translation](https://www.youtube.com/watch?v=SysgYptB198)
+- ideas related to my [bachelor's project on interpretability](https://paulbricman.com/reflections/distributions-of-meaning)
+- [intro resource on attention in cognitive science](https://mitpress.mit.edu/books/handbook-attention)
+- awesome [token-level BERT visualization tool](https://github.com/jessevig/bertviz)
+- motivation behind [choosing second-to-last layer](https://github.com/jessevig/bertviz)
+- a cognitive architecture which doubles down on [firing synchrony across biologically-plausible neurons](https://www.nengo.ai/)
+''')
