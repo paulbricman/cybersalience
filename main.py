@@ -104,11 +104,12 @@ else:
         raw_pars = st.session_state['content'].split('\n')
         pars = []
 
-        for raw_par in raw_pars:
-            if raw_par.strip() != '':
-                corpus_tokens, attention = attend(
-                    raw_par, query, model, tokenizer)
-                pars += [render_html(corpus_tokens, attention, focus)]
+        with st.spinner('attending to text...'):
+            for raw_par in raw_pars:
+                if raw_par.strip() != '':
+                    corpus_tokens, attention = attend(
+                        raw_par, query, model, tokenizer)
+                    pars += [render_html(corpus_tokens, attention, focus)]
 
     if st.sidebar.button('reset content'):
         st.session_state['content'] = None
